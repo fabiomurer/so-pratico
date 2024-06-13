@@ -74,3 +74,53 @@ int main() {
 }
 
 ```
+
+### working with fdtimer
+
+```c
+fd = timerfd_create(CLOCK_REALTIME, 0);
+    if (fd == -1)
+        err(EXIT_FAILURE, "timerfd_create");
+
+    if (timerfd_settime(fd, CLOCK_REALTIME, &new_value, NULL) == -1)
+        err(EXIT_FAILURE, "timerfd_settime");
+
+
+    for (tot_exp = 0; tot_exp < max_exp;) {
+        s = read(fd, &exp, sizeof(uint64_t));
+        if (s != sizeof(uint64_t))
+            err(EXIT_FAILURE, "read");
+
+        tot_exp += exp;
+        struct itimerspec elapsed;
+        timerfd_gettime(fd, &elapsed);
+        float timepassed = delta * tot_exp + (
+            delta - (float)elapsed.it_value.tv_sec - 
+            (float)(elapsed.it_value.tv_nsec / 1e9)
+        );
+        printf("%f: %s\n", timepassed, string);
+    }
+```
+
+### some wild forks
+
+```c
+/*
+spawn a process that execute job(argv[i]) concurrent
+es. argv = {1, 2, 3, 4, null} job=iseven t1 iseven(1) t2 iseven(2) ...
+*/
+int i = 1;
+while (argv[i] != NULL) {
+    pid_t fork_retvalue;
+    if (fork_retvalue = fork()) {
+        //genitore
+        job(argv[i]);
+        int status;
+        wait(&status); // aspetta che finosca il figlio
+        exit(EXIT_SUCCESS);
+    }
+    else {
+        i++; // use next argv, next iteration is father
+    }
+}
+```
