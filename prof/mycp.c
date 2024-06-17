@@ -3,7 +3,7 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 
-#define BUFSIZE 65536
+#define BUFSIZE 4096
 
 int main(int argc, char *argv[]){
 	mode_t u = umask(007);

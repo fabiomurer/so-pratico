@@ -3,6 +3,9 @@
 ### create named pipe and read from it
 
 ```c
+#include <fcntl.h>
+#include <sys/stat.h>
+
 char* fifoname = argv[1];
 if (mkfifo(fifoname, 0666) != 0) {
     perror("mkfifo");
@@ -124,3 +127,18 @@ while (argv[i] != NULL) {
     }
 }
 ```
+
+### catch signals
+
+```c
+// reopen a fifo when closed
+void sig_handler(int signo) {
+    if (signo == SIGPIPE) {
+        printf("reopen pipe\n");
+        fifofile = open(fifoname, O_RDONLY);
+    }
+}
+signal(SIGPIPE, sig_handler);
+```
+
+### 
