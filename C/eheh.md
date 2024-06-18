@@ -169,3 +169,34 @@ else {
         perror("exec2");
 }
 ```
+
+### get time delta
+
+```c
+// mesure execution time of child
+time_t start = time(NULL);
+if (start == -1)
+    perror("time");
+        
+wait(&exitstatus);
+
+time_t finish = time(NULL);
+if (finish == -1)
+    perror("time");
+            
+double delta = difftime(finish, start);
+            
+if (delta < 1.0) { // if is less tha 1 sec 
+    break;
+}
+```
+
+### check if child exited normally
+
+```c
+int exitstatus;
+wait(&exitstatus);
+if (WIFEXITED(exitstatus)) {
+    printf("exited normally");
+}
+```
