@@ -21,10 +21,9 @@ read(fifofile, buff, 200);
 ### exec like shell
 
 ```c
-// execvp search file like shell
-execvp(args[0], &args[1]); //char* argv[]={"Test", "Test_1", NULL};
-perror("execve");   /* execve() returns only on error */
-exit(EXIT_FAILURE);
+char* args[] = {"ls", "-l", NULL};
+execvp("ls", args);
+execlp("ls", "ls", "-l", NULL);
 ```
 
 ### print null char ?.?
@@ -141,4 +140,32 @@ void sig_handler(int signo) {
 signal(SIGPIPE, sig_handler);
 ```
 
-### 
+### exec `ls -l | awk '{print $1}'` with pipe and stdin/stdout replacement dup2
+
+```c
+
+// Data can be written to the file descriptor fildes[1] and read from the file descriptor fildes[0]
+int pipefd[2];
+if (pipe(pipefd) == -1) {
+    perror("pipe");
+}
+if (fork() == 0) { // child
+    close(pipefd[0]);
+    if (dup2(pipefd[1], STDOUT_FILENO) == -1)
+        perror("dup1");
+    close(pipefd[1]);
+    
+    if (execlp("ls", "ls", "-l", NULL) == -1)
+        perror("exec1");
+} 
+else {
+    close(pipefd[1]);
+    
+    if (dup2(pipefd[0], STDIN_FILENO) == -1)
+        perror("dup2");
+    close(pipefd[0]);    
+    
+    if (execlp("awk", "awk", "{print $1}", NULL) == -1)
+        perror("exec2");
+}
+```
