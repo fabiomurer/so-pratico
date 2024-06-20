@@ -200,3 +200,41 @@ if (WIFEXITED(exitstatus)) {
     printf("exited normally");
 }
 ```
+
+### dlopen
+
+```c
+/*
+execute function main from file *.so
+*/
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <dlfcn.h>
+#include <gnu/lib-names.h>
+#include <unistd.h>
+
+void *handle;
+int (*fmain)(int, char**);
+char* error;
+
+handle = dlopen(globalpath, RTLD_LAZY); // globalpath es. ./ciao.so
+if (!handle) {
+	fprintf(stderr, "%s\n", dlerror());
+	exit(EXIT_FAILURE);
+}
+    
+dlerror();
+
+fmain = (void (*)(int, char**)) dlsym(handle, "main");
+    
+error = dlerror();
+if (error != NULL) {
+	fprintf(stderr, "%s\n", error);
+	exit(EXIT_FAILURE);
+}
+	
+(*fmain)(argc-1, &argv[1]);
+	
+dlclose(handle);
+```
