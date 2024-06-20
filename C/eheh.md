@@ -238,3 +238,26 @@ if (error != NULL) {
 	
 dlclose(handle);
 ```
+
+### poll
+
+```c
+#include <errno.h>
+#include <poll.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <fcntl.h>
+
+struct pollfd pfd[1] = {
+	{notifyfd, POLLIN, 0}
+};
+
+int prv = poll(pfd, 1, -1); // timeout -1 aspetta per sempre
+if (prv < 0)
+	return(1); // timed out
+if (pfd[0].revents & POLLIN) { // something to read
+    len = read(notifyfd, buf, sizeof(buf));
+}
+```
