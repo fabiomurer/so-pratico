@@ -261,3 +261,64 @@ if (pfd[0].revents & POLLIN) { // something to read
     len = read(notifyfd, buf, sizeof(buf));
 }
 ```
+
+### inotify
+
+```c
+int notifyfd = inotify_init();
+int watch;
+if ((watch =inotify_add_watch(notifyfd, dir, IN_MOVED_TO | IN_CREATE)) == -1) {
+    perror("inotify add");
+    exit(EXIT_FAILURE);
+}
+char buf[4096] __attribute__ ((aligned(__alignof__(struct inotify_event))));
+const struct inotify_event *event;
+ssize_t len;
+struct pollfd pfd[1] = {
+	{notifyfd, POLLIN, 0}
+};
+
+while(1) {
+    poll(pfd, 1, -1);
+    len = read(notifyfd, buf, sizeof(buf));
+    
+    for (char *ptr = buf; ptr < buf + len; ptr += sizeof(struct inotify_event) + event->len) {
+        event = (const struct inotify_event *) ptr;
+        char filename[1024] = "";
+        snprintf(filename, 1024, "%s/%s", dir, event->name);
+        if (event->mask & (IN_MOVED_TO | IN_CREATE)) {
+            // do stuff
+        }
+    }
+}
+
+inotify_rm_watch(notifyfd, watch);
+close(notifyfd);
+```
+
+### stat
+
+```c
+//check if file is executable
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/stat.h>
+
+char* f = argv[1];
+struct stat sb;
+
+if (stat(f, &sb) == -1) {
+    perror("stat");
+    exit(EXIT_FAILURE);
+}
+
+switch (sb.st_mode & S_IXUSR) {
+    case S_IXUSR:
+        printf("is executable\n");
+    default:
+        printf("not executable\n");
+}
+
+exit(EXIT_SUCCESS);
+```
