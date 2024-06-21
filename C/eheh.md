@@ -322,3 +322,47 @@ switch (sb.st_mode & S_IXUSR) {
 
 exit(EXIT_SUCCESS);
 ```
+
+### execs
+
+```c
+//The following program demonstrates the use of execs:
+
+#include <stdio.h>
+#include <unistd.h>
+#include <execs.h>
+#define BUFLEN 1024
+
+int main(int argc, char *argv)
+{
+     char buf[BUFLEN];
+     printf("type in a command and its arguments, e.g. 'ls -l'\n");
+     if (fgets(buf, BUFLEN, stdin) != NULL) {
+          execsp(buf);
+          printf("exec error\n");
+     }
+}
+```
+
+### s2argv
+
+```c
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+#include <execs.h>
+#define BUFLEN 1024
+
+int main(int argc, char *argv)
+{
+     char buf[BUFLEN];
+     printf("type in a command and its arguments, e.g. 'ls -l'\n");
+     if (fgets(buf, BUFLEN, stdin) != NULL) {
+          char **argv=s2argv(buf);
+          execvp(argv[0], argv);
+          s2argv_free(argv);
+          printf("exec error\n");
+     }
+}
+
+```
