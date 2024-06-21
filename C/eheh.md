@@ -366,3 +366,25 @@ int main(int argc, char *argv)
 }
 
 ```
+
+### create symlink
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+
+if (symlink(linkto, namefile) == -1)
+    perror("symlink");
+```
+
+### get realpath
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+char* abspath = realpath(symlinkname, NULL); // resolve also symlinks, if NULL, alloc it
+printf("%s\n", abspath);
+free(abspath);
+```
