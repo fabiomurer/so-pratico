@@ -1,4 +1,4 @@
-# heheh
+# HOWTO :C
 
 ### create named pipe and read from it
 
@@ -387,4 +387,12 @@ if (symlink(linkto, namefile) == -1)
 char* abspath = realpath(symlinkname, NULL); // resolve also symlinks, if NULL, alloc it
 printf("%s\n", abspath);
 free(abspath);
+```
+
+### wait all children
+
+```c
+int a;
+int wpid;
+while ((wpid = wait(&a)) > 0);
 ```

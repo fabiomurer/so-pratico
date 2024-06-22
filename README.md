@@ -12,6 +12,8 @@
 
 - [https://docs.python.org/3/library/os.html](https://docs.python.org/3/library/os.html)
 
+- [https://www.w3schools.com/python/module_os.asp](https://www.w3schools.com/python/module_os.asp)
+
 ### Linux
 
 - [https://chmod-calculator.com/](https://chmod-calculator.com/)
